@@ -176,6 +176,7 @@ enable_uart=1
 #dtoverlay=tc358743
 
 dtoverlay=disable-bt
+#chi: enabling dwc2 will disable ethernet on rpi 3b 
 dtoverlay=dwc2,dr_mode=peripheral
 dtparam=act_led_gpio=13
 
@@ -225,7 +226,8 @@ CSIFIRMWARE
         echo "tc358743" >> /etc/modules
       fi
 
-      install-tc358743
+      # disabe this to avoid dwc
+      # install-tc358743
 
     fi
 
@@ -458,7 +460,9 @@ install-kvmd-pkgs() {
 
 fix-udevrules() {
   # for hdmiusb, replace %b with 1-1.4:1.0 in /etc/udev/rules.d/99-kvmd.rules
-  sed -i -e 's+\%b+1-1.4:1.0+g' /etc/udev/rules.d/99-kvmd.rules | tee -a $LOGFILE
+  # chi: fix the device id for my case
+  sed -i -e 's+\%b+1-1.3:1.0+g' /etc/udev/rules.d/99-kvmd.rules | tee -a $LOGFILE
+  sed -i -e 's+1-1.5+1-1.3+g' /usr/bin/kvmd-udev-hdmiusb-check | tee -a $LOGFILE
   echo
   cat /etc/udev/rules.d/99-kvmd.rules | tee -a $LOGFILE
 } # end fix-udevrules
